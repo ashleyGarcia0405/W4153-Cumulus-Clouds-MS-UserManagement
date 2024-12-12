@@ -13,7 +13,8 @@ public class LoggingInterceptor implements HandlerInterceptor {
 
   @Override
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-    logger.info("Incoming request - Method: {}, Path: {}", request.getMethod(), request.getRequestURI());
+    String user = request.getUserPrincipal() != null ? request.getUserPrincipal().getName() : "Anonymous";
+    logger.info("Request from user: {} to {}", user, request.getRequestURI());
     return true;
   }
 

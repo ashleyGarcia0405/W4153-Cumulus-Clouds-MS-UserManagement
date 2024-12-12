@@ -1,45 +1,47 @@
 package com.cumulusclouds.w4153cumuluscloudsmsusermanagement.service;
 
+import com.cumulusclouds.w4153cumuluscloudsmsusermanagement.model.Account;
+import com.cumulusclouds.w4153cumuluscloudsmsusermanagement.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
-import java.util.NoSuchElementException;
-
-import com.cumulusclouds.w4153cumuluscloudsmsusermanagement.repository.AccountRepository;
-import com.cumulusclouds.w4153cumuluscloudsmsusermanagement.model.Account;
 
 @Service
-@Transactional
 public class AccountService {
 
-  @Autowired
-  private AccountRepository accountRepository;
+    @Autowired
+    private AccountRepository accountRepository;
 
-  public List<Account> getAllAccounts() {
-    return accountRepository.findAll();
-  }
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-  public Account getAccountById(UUID id) {
-    return accountRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Account not found"));
-  }
+    public List<Account> getAllAccounts() {
+        return accountRepository.findAll();
+    }
 
-  public Account createAccount(Account account) {
-    return accountRepository.save(account);
-  }
+    public Optional<Account> getAccountById(UUID id) {
+        return accountRepository.findById(id);
+    }
 
-  public Account updateAccount(UUID id, Account updatedAccount) {
-    Account existingAccount = getAccountById(id);
-    existingAccount.setUsername(updatedAccount.getUsername());
-    existingAccount.setEmail(updatedAccount.getEmail());
-    existingAccount.setPasswordHash(updatedAccount.getPasswordHash());
-    return accountRepository.save(existingAccount);
-  }
+    public Account createAccount(Account account) {
+        account.setPasswordHash(passwordEncoder.encode(account.getPasswordHash()));
+        return accountRepository.save(account);
+    }
 
-  public void deleteAccount(UUID id) {
-    accountRepository.deleteById(id);
-  }
+    public boolean usernameOrEmailExists(String username, String email) {
+        return accountRepository.findByUsername(username).isPresent() ||
+               accountRepository.findByEmail(email).isPresent();
+    }
 
+    public Optional<Account> findByUsername(String username) {
+        return accountRepository.findByUsername(username);
+    }
+
+    public boolean checkPassword(String rawPassword, String encodedPassword) {
+        return passwordEncoder.matches(rawPassword, encodedPassword);
+    }
 }

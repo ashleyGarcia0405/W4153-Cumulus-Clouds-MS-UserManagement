@@ -23,6 +23,9 @@ public class Account {
   @Column(name = "password_hash", length = 255, nullable = false)
   private String passwordHash;
 
+  @Column(name = "role", length = 50, nullable = false)
+  private String role;
+
   @CreationTimestamp
   @Column(name = "created_at", nullable = false, updatable = false)
   private java.time.Instant createdAt;
@@ -61,6 +64,14 @@ public class Account {
 
   public void setPasswordHash(String passwordHash) {
       this.passwordHash = passwordHash;
+  }
+
+  public String getRole() {
+      return role;
+  }
+
+  public void setRole(String role) {
+      this.role = role;
   }
 
   public java.time.Instant getCreatedAt() {
