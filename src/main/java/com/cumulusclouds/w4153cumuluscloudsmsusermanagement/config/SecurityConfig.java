@@ -7,6 +7,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.cumulusclouds.w4153cumuluscloudsmsusermanagement.security.JwtUtils;
 import com.cumulusclouds.w4153cumuluscloudsmsusermanagement.security.JwtAuthenticationFilter;
@@ -33,17 +36,30 @@ public class SecurityConfig {
     }
 
     @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOrigin("*"); // Allow all origins
+        configuration.addAllowedMethod("*"); // Allow all HTTP methods
+        configuration.addAllowedHeader("*"); // Allow all headers
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf().disable()
+            .cors().configurationSource(corsConfigurationSource())
+            .and()
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/public/**").permitAll() // Allow public endpoints
-                .requestMatchers("/api/bookers/**").hasAuthority("BOOKER")
-                .requestMatchers("/api/musicians/**").hasAuthority("MUSICIAN")
+                .requestMatchers("/api/public/**").permitAll()
+                .requestMatchers("/api/accounts/bookers/**").hasAuthority("BOOKER")
+                .requestMatchers("/api/accounts/musicians/**").hasAuthority("MUSICIAN")
                 .requestMatchers("/api/accounts/**").authenticated()
-                .anyRequest().authenticated() // Protect all other endpoints
+                .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-            .httpBasic(); // Enable HTTP Basic Authentication
+            .httpBasic();
 
         return http.build();
     }
