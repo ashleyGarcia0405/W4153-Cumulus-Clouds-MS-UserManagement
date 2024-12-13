@@ -27,6 +27,12 @@ public class RouteController {
     @ApiResponse(responseCode = "400", description = "Username or email already exists")
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
+        if (registerRequest == null || registerRequest.getUsername() == null || registerRequest.getEmail() == null) {
+            return ResponseEntity.status(400).body("{ \"message\": \"Invalid request body\" }");
+        }
+        // Log the request for debugging
+        System.out.println("Register Request: " + registerRequest);
+
         if (accountService.usernameOrEmailExists(registerRequest.getUsername(), registerRequest.getEmail())) {
             return ResponseEntity.status(400).body("{ \"message\": \"Username or email already exists\" }");
         }
@@ -35,6 +41,7 @@ public class RouteController {
         newAccount.setUsername(registerRequest.getUsername());
         newAccount.setEmail(registerRequest.getEmail());
         newAccount.setPasswordHash(registerRequest.getPassword());
+        newAccount.setRole("BOOKER"); // Default role is BOOKER FOR TESTING PURPOSES...MUST CHANGE LATER
 
         accountService.createAccount(newAccount);
 

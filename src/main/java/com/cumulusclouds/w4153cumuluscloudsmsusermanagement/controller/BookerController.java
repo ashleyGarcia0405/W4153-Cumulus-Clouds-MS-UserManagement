@@ -15,7 +15,6 @@ import com.cumulusclouds.w4153cumuluscloudsmsusermanagement.service.BookerServic
 
 import java.util.List;
 import java.util.UUID;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @RestController

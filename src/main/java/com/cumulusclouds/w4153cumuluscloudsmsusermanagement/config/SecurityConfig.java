@@ -53,9 +53,9 @@ public class SecurityConfig {
             .and()
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/public/**").permitAll()
+                .requestMatchers("/api/accounts/**").authenticated()
                 .requestMatchers("/api/accounts/bookers/**").hasAuthority("BOOKER")
                 .requestMatchers("/api/accounts/musicians/**").hasAuthority("MUSICIAN")
-                .requestMatchers("/api/accounts/**").authenticated()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)

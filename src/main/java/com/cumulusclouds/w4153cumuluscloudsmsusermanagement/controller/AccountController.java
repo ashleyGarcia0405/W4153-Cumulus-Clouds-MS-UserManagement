@@ -1,7 +1,6 @@
 package com.cumulusclouds.w4153cumuluscloudsmsusermanagement.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -14,7 +13,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 import java.util.List;
 import java.util.UUID;
 import java.util.Optional;
-import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 
 import com.cumulusclouds.w4153cumuluscloudsmsusermanagement.model.Account;
@@ -23,7 +21,6 @@ import com.cumulusclouds.w4153cumuluscloudsmsusermanagement.model.Musician;
 import com.cumulusclouds.w4153cumuluscloudsmsusermanagement.service.AccountService;
 import com.cumulusclouds.w4153cumuluscloudsmsusermanagement.repository.BookerRepository;
 import com.cumulusclouds.w4153cumuluscloudsmsusermanagement.repository.MusicianRepository;
-import com.cumulusclouds.w4153cumuluscloudsmsusermanagement.security.JwtUtils;
 
 @RestController
 @RequestMapping("/api/accounts")
@@ -37,9 +34,6 @@ public class AccountController {
 
     @Autowired
     private MusicianRepository musicianRepository;
-
-    @Autowired
-    private JwtUtils jwtUtils;
 
     @Operation(summary = "Retrieve all accounts", description = "Fetches a list of all available accounts from the database.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the list of accounts", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Account.class)))
