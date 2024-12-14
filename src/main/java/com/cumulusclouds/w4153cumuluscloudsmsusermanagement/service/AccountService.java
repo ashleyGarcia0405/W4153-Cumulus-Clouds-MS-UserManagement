@@ -44,4 +44,8 @@ public class AccountService {
     public boolean checkPassword(String rawPassword, String encodedPassword) {
         return passwordEncoder.matches(rawPassword, encodedPassword);
     }
+
+    public Account updateAccount(Account account) {
+        return accountRepository.save(account);
+    }
 }

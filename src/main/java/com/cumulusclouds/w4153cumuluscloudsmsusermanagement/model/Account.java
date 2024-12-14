@@ -34,6 +34,9 @@ public class Account {
   @Column(name = "updated_at")
   private java.time.Instant updatedAt;
 
+  @Column(name = "profile_image_url", length = 255, nullable = true)
+  private String profileImageUrl;
+
   public UUID getUserId() {
       return userId;
   }
@@ -80,6 +83,14 @@ public class Account {
 
   public java.time.Instant getUpdatedAt() {
       return updatedAt;
+  }
+
+  public String getProfileImageUrl() {
+      return profileImageUrl;
+  }
+
+  public void setProfileImageUrl(String profileImageUrl) {
+      this.profileImageUrl = profileImageUrl;
   }
 
 }
