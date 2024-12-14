@@ -41,7 +41,7 @@ public class RouteController {
         newAccount.setUsername(registerRequest.getUsername());
         newAccount.setEmail(registerRequest.getEmail());
         newAccount.setPasswordHash(registerRequest.getPassword());
-        newAccount.setRole("BOOKER"); // Default role is BOOKER FOR TESTING PURPOSES...MUST CHANGE LATER
+        newAccount.setRole(registerRequest.getRole());
 
         accountService.createAccount(newAccount);
 
@@ -65,7 +65,7 @@ public class RouteController {
         }
 
         String token = jwtUtils.generateJwtToken(account.getUserId().toString());
-        return ResponseEntity.ok("{ \"token\": \"" + token + "\", \"message\": \"Login successful\" }");
+        return ResponseEntity.ok("{ \"token\": \"" + token + "\", \"role\": \"" + account.getRole() + "\", \"message\": \"Login successful\" }");
     }
 
     // Data class for register requests
@@ -73,6 +73,7 @@ public class RouteController {
         private String username;
         private String email;
         private String password;
+        private String role;
 
         // Getters and Setters
         public String getUsername() {
@@ -97,6 +98,14 @@ public class RouteController {
 
         public void setPassword(String password) {
             this.password = password;
+        }
+
+        public String getRole() {
+            return role;
+        }
+
+        public void setRole(String role) {
+            this.role = role;
         }
     }
 
