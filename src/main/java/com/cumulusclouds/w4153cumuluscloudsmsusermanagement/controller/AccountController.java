@@ -1,5 +1,8 @@
 package com.cumulusclouds.w4153cumuluscloudsmsusermanagement.controller;
 
+import com.cumulusclouds.w4153cumuluscloudsmsusermanagement.api.CreateUserCommand;
+import com.cumulusclouds.w4153cumuluscloudsmsusermanagement.api.ShortUser;
+import com.cumulusclouds.w4153cumuluscloudsmsusermanagement.api.UsersNamedQueries;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -8,6 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.hateoas.EntityModel;
+import org.axonframework.commandhandling.gateway.CommandGateway;
+import org.springframework.http.codec.ServerSentEvent;
+import org.axonframework.messaging.responsetypes.ResponseTypes;
+import org.axonframework.queryhandling.QueryGateway;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 import java.util.List;
@@ -34,6 +41,14 @@ public class AccountController {
 
     @Autowired
     private MusicianRepository musicianRepository;
+
+    private final CommandGateway commandGateway;
+    private final QueryGateway queryGateway;
+
+    public AccountController(CommandGateway commandGateway, QueryGateway queryGateway) {
+        this.commandGateway = commandGateway;
+        this.queryGateway = queryGateway;
+    }
 
     @Operation(summary = "Retrieve all accounts", description = "Fetches a list of all available accounts from the database.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved the list of accounts", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Account.class)))
@@ -66,6 +81,9 @@ public class AccountController {
     @PostMapping("/")
     public ResponseEntity<EntityModel<Account>> createAccount(@RequestBody Account account) {
         Account savedAccount = accountService.createAccount(account);
+        var command = new CreateUserCommand(savedAccount.getUserId(),savedAccount.getUsername(),savedAccount.getEmail(),savedAccount.getPasswordHash(),savedAccount.getRole(),savedAccount.getCreatedAt(),savedAccount.getUpdatedAt());
+        CompletableFuture<Void> future = commandGateway.send(command);
+        future.join();
         EntityModel<Account> resource = EntityModel.of(savedAccount);
         resource.add(linkTo(methodOn(AccountController.class).getAccountById(savedAccount.getUserId())).withSelfRel());
         resource.add(linkTo(methodOn(AccountController.class).getAllAccounts()).withRel("accounts"));
@@ -95,4 +113,16 @@ public class AccountController {
         List<Musician> musicians = musicianRepository.findByAccount(accountOptional.get());
         return ResponseEntity.ok(musicians);
     }
+
+
+    //API graphQL endpoint
+    @GetMapping("/user") //<.>
+    public CompletableFuture<List<ShortUser>> findAll() { //<.>
+        return queryGateway.query( //<.>
+                UsersNamedQueries.FIND_ALL, //<.>
+                null, //<.>
+                ResponseTypes.multipleInstancesOf(ShortUser.class) //<.>
+        );
+    }
+
 }
