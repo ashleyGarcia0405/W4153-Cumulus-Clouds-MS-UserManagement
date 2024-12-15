@@ -15,8 +15,10 @@ import com.cumulusclouds.w4153cumuluscloudsmsusermanagement.security.JwtUtils;
 import com.cumulusclouds.w4153cumuluscloudsmsusermanagement.security.JwtAuthenticationFilter;
 
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 @Configuration
+@EnableWebSecurity
 public class SecurityConfig {
 
     private final JwtUtils jwtUtils;
@@ -38,9 +40,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("*"); // Allow all origins
-        configuration.addAllowedMethod("*"); // Allow all HTTP methods
-        configuration.addAllowedHeader("*"); // Allow all headers
+        configuration.addAllowedOriginPattern("*"); // Use wildcard for all origins
+        configuration.addAllowedMethod("*");       // Allow all HTTP methods
+        configuration.addAllowedHeader("*");       // Allow all headers
+        configuration.setAllowCredentials(false);  // Disable credentials
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
@@ -48,18 +51,18 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        System.out.println("Initializing SecurityFilterChain...");
+
         http.csrf().disable()
             .cors().configurationSource(corsConfigurationSource())
             .and()
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/public/**").permitAll()
-                .requestMatchers("/api/accounts/**").authenticated()
-                .requestMatchers("/api/accounts/bookers/**").hasAuthority("BOOKER")
-                .requestMatchers("/api/accounts/musicians/**").hasAuthority("MUSICIAN")
+                .requestMatchers("/swagger-ui/**", "/swagger", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-            .httpBasic();
+            .httpBasic().disable();
 
         return http.build();
     }
