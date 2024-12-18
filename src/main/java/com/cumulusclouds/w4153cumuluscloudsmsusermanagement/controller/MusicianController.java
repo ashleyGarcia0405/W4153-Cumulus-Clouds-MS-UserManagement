@@ -47,7 +47,7 @@ public class MusicianController {
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = Musician.class)))
     @ApiResponse(responseCode = "404", description = "Musician not found")
     @GetMapping("/getMusicianById")
-    public ResponseEntity<EntityModel<Musician>> getMusicianById(@PathVariable UUID id) {
+    public ResponseEntity<EntityModel<Musician>> getMusicianById(@RequestParam UUID id) {
         return musicianService.getMusicianById(id)
             .map(this::toEntityModel)
             .map(ResponseEntity::ok)
