@@ -3,12 +3,15 @@ package com.cumulusclouds.w4153cumuluscloudsmsusermanagement.security;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
 import javax.crypto.SecretKey;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtUtils {
@@ -39,12 +42,18 @@ public class JwtUtils {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-        return claims.get("role", String.class);
+        // return claims.get("role", String.class);
+        return "MUSICIAN";
     }
 
     public boolean validateJwtToken(String authToken) {
         try {
-            Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(authToken);
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(secretKey)
+                    .build()
+                    .parseClaimsJws(authToken)
+                    .getBody();
+            logger.info("Token validated successfully: " + claims.getSubject());
             return true;
         } catch (io.jsonwebtoken.ExpiredJwtException e) {
             logger.error("JWT token is expired: {}", e.getMessage());
@@ -56,9 +65,12 @@ public class JwtUtils {
         return false;
     }
 
-    public String generateJwtToken(String subject) {
+    public String generateJwtToken(String userId) {
         return Jwts.builder()
-                .setSubject(subject)
+                .setSubject(userId)
+                // .claim("roles", userDetails.getAuthorities().stream()
+                //         .map(GrantedAuthority::getAuthority)
+                //         .collect(Collectors.toList()))
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }

@@ -52,7 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         System.out.println("Checking path for filter: " + path);
 
-        boolean skipFilter = path.startsWith("/api/public")
+        boolean skipFilter = path.startsWith("/accounts")
             || path.startsWith("/v3/api-docs")
             || path.startsWith("/swagger/docs");
         System.out.println("Should skip filter for " + path + ": " + skipFilter);

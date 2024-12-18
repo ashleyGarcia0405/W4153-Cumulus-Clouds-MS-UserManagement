@@ -41,6 +41,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOriginPattern("*"); // Use wildcard for all origins
+        // configuration.addAllowedOrigin("http://localhost:5173"); 
         configuration.addAllowedMethod("*");       // Allow all HTTP methods
         configuration.addAllowedHeader("*");       // Allow all headers
         configuration.setAllowCredentials(false);  // Disable credentials
@@ -58,8 +59,10 @@ public class SecurityConfig {
             .and()
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/public/**").permitAll()
+                // .antMatchers(HttpMethod.POST, "/api/accounts/musicians/").permitAll()
                 .requestMatchers("/swagger-ui/**", "/swagger", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
-                .anyRequest().authenticated()
+                .requestMatchers("/api/accounts/musicians").permitAll()
+                .anyRequest().permitAll()
             )
             .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
             .httpBasic().disable();

@@ -17,9 +17,15 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+
 @RestController
 @RequestMapping("/api/accounts/musicians")
 public class MusicianController {
+
+    private static final Logger log = LoggerFactory.getLogger(MusicianController.class);
 
     @Autowired
     private MusicianService musicianService;
@@ -40,7 +46,7 @@ public class MusicianController {
     @ApiResponse(responseCode = "200", description = "Musician found successfully", 
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = Musician.class)))
     @ApiResponse(responseCode = "404", description = "Musician not found")
-    @GetMapping("/{id}")
+    @GetMapping("/getMusicianById")
     public ResponseEntity<EntityModel<Musician>> getMusicianById(@PathVariable UUID id) {
         return musicianService.getMusicianById(id)
             .map(this::toEntityModel)
@@ -52,12 +58,23 @@ public class MusicianController {
     @ApiResponse(responseCode = "200", description = "Musician created successfully", 
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = Musician.class)))
     @ApiResponse(responseCode = "400", description = "Invalid musician data provided")
-    @PostMapping("/")
-    public ResponseEntity<EntityModel<Musician>> createMusician(@RequestBody Musician musician, @RequestParam UUID accountId) {
+    @PostMapping("/createMusician")
+    public ResponseEntity<EntityModel<Musician>> createMusician(
+            @RequestBody Musician musician, @RequestParam UUID accountId) {
         try {
+            // // Extract user ID (accountId) from JWT token
+            // String accountId = authentication.getName();
+
+            // Log extracted user details for debugging
+            log.info("Creating musician for accountId: " + accountId);
+//             log.info("JWT Subject: " + authentication.getPrincipal());
+// log.info("Authorities: " + authentication.getAuthorities());
+
+
             Musician savedMusician = musicianService.createMusician(musician, accountId);
             return ResponseEntity.ok(toEntityModel(savedMusician));
         } catch (IllegalArgumentException e) {
+            log.error("Invalid musician data provided: " + e.getMessage());
             return ResponseEntity.badRequest().build();
         }
     }

@@ -32,11 +32,10 @@ public class MusicianService {
     }
 
     public Musician createMusician(Musician musician, UUID accountId) {
-        Optional<Account> account = accountRepository.findById(accountId);
-        if (account.isEmpty()) {
-            throw new IllegalArgumentException("Account not found");
-        }
-        musician.setAccount(account.get());
+        Account account = accountRepository.findById(accountId)
+            .orElseThrow(() -> new IllegalArgumentException("Account not found for ID: " + accountId));
+        
+        musician.setAccount(account);
         return musicianRepository.save(musician);
     }
 
