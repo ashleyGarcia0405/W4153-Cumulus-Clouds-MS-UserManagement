@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.cumulusclouds.w4153cumuluscloudsmsusermanagement.W4153cumuluscloudsmsusermanagementApplicationTests
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 15.54 s -- in com.cumulusclouds.w4153cumuluscloudsmsusermanagement.W4153cumuluscloudsmsusermanagementApplicationTests
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 18.05 s -- in com.cumulusclouds.w4153cumuluscloudsmsusermanagement.W4153cumuluscloudsmsusermanagementApplicationTests

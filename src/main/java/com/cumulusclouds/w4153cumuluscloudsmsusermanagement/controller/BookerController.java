@@ -27,7 +27,7 @@ public class BookerController {
   @Operation(summary = "Retrieve all bookers", description = "Fetches a list of all available bookers from the database.")
   @ApiResponse(responseCode = "200", description = "Successfully retrieved the list of bookers", 
           content = @Content(mediaType = "application/json", schema = @Schema(implementation = Booker.class)))
-  @GetMapping("/")
+  @GetMapping("/getAllBookers")
   public CompletableFuture<ResponseEntity<List<EntityModel<Booker>>>> getAllBookers() {
     List<Booker> bookers = bookerService.getAllBookers();
     List<EntityModel<Booker>> resources = bookers.stream()
@@ -40,7 +40,7 @@ public class BookerController {
   @ApiResponse(responseCode = "200", description = "Booker found successfully", 
           content = @Content(mediaType = "application/json", schema = @Schema(implementation = Booker.class)))
   @ApiResponse(responseCode = "404", description = "Booker not found")
-  @GetMapping("/{id}")
+  @GetMapping("/getBookerById")
   public ResponseEntity<EntityModel<Booker>> getBookerById(@PathVariable UUID id) {
     return bookerService.getBookerById(id)
         .map(this::toEntityModel)
@@ -52,7 +52,7 @@ public class BookerController {
   @ApiResponse(responseCode = "200", description = "Booker created successfully", 
           content = @Content(mediaType = "application/json", schema = @Schema(implementation = Booker.class)))
   @ApiResponse(responseCode = "400", description = "Invalid booker data provided")
-  @PostMapping("/")
+  @PostMapping("/createBooker")
   public ResponseEntity<EntityModel<Booker>> createBooker(@RequestBody Booker booker, @RequestParam UUID accountId) {
     try {
       Booker savedBooker = bookerService.createBooker(booker, accountId);
@@ -66,7 +66,7 @@ public class BookerController {
   @ApiResponse(responseCode = "200", description = "Booker updated successfully", 
           content = @Content(mediaType = "application/json", schema = @Schema(implementation = Booker.class)))
   @ApiResponse(responseCode = "404", description = "Booker not found")
-  @PutMapping("/{id}")
+  @PutMapping("/updateBooker")
   public ResponseEntity<EntityModel<Booker>> updateBooker(@PathVariable UUID id, @RequestBody Booker bookerDetails) {
     return bookerService.updateBooker(id, bookerDetails)
         .map(this::toEntityModel)
@@ -77,12 +77,13 @@ public class BookerController {
   @Operation(summary = "Delete a booker", description = "Deletes the booker with the specified booker ID.")
   @ApiResponse(responseCode = "204", description = "Booker deleted successfully")
   @ApiResponse(responseCode = "404", description = "Booker not found")
-  @DeleteMapping("/{id}")
+  @DeleteMapping("/deleteBooker")
   public ResponseEntity<Void> deleteBooker(@PathVariable UUID id) {
     return bookerService.deleteBooker(id) 
         ? ResponseEntity.noContent().build()
         : ResponseEntity.notFound().build();
   }
+
 
   private EntityModel<Booker> toEntityModel(Booker booker) {
     return EntityModel.of(booker,

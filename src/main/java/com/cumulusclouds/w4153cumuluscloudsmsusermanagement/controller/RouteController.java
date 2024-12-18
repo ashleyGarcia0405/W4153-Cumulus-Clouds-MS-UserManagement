@@ -45,7 +45,8 @@ public class RouteController {
 
         accountService.createAccount(newAccount);
 
-        return ResponseEntity.ok("{ \"message\": \"Registration successful\" }");
+        String token = jwtUtils.generateJwtToken(newAccount.getUserId().toString());
+        return ResponseEntity.ok("{ \"token\": \"" + token + "\", \"role\": \"" + newAccount.getRole() + "\", \"message\": \"Registration successful\" }");
     }
 
     @Operation(summary = "User login", description = "Authenticates user and returns JWT token")
